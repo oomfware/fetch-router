@@ -1,0 +1,109 @@
+import type { Params, RoutePattern } from '@remix-run/route-pattern';
+
+import type { Middleware } from './middleware.ts';
+import type { RequestContext } from './request-context.ts';
+import type { RequestMethod } from './request-methods.ts';
+import type { Route, RouteMap } from './route-map.ts';
+
+/** middleware type for route handlers */
+type RouteMiddleware<
+	method extends RequestMethod | 'ANY' = RequestMethod | 'ANY',
+	params extends Record<string, string> = Record<string, string>,
+> = Middleware<[RequestContext<method, params>], Promise<Response>>;
+
+// prettier-ignore
+export type Controller<routes extends RouteMap> =
+  | ControllerWithMiddleware<routes>
+  | ControllerWithoutMiddleware<routes>
+
+type ControllerWithMiddleware<routes extends RouteMap> = {
+	middleware: RouteMiddleware[];
+	actions: ControllerWithoutMiddleware<routes>;
+} & (routes extends Record<string, any>
+	? {
+			// explicitly exclude route name keys from objects with `middleware`
+			[name in keyof routes as routes extends any ? never : name]?: never;
+		}
+	: {});
+
+// prettier-ignore
+type ControllerWithoutMiddleware<routes extends RouteMap> = routes extends any ?
+  ({
+    [name in keyof routes]: (
+      routes[name] extends Route<infer method extends RequestMethod | 'ANY', infer pattern extends string> ? Action<method, pattern> :
+      routes[name] extends RouteMap ? Controller<routes[name]> :
+      never
+    )
+  } & {
+    // explicitly exclude `middleware` from objects with route name keys
+    middleware?: never
+  }) :
+  never
+
+/**
+ * an individual route action.
+ */
+export type Action<method extends RequestMethod | 'ANY', pattern extends string> =
+	| RequestHandlerWithMiddleware<method, Params<pattern>>
+	| RequestHandler<method, Params<pattern>>;
+
+type RequestHandlerWithMiddleware<
+	method extends RequestMethod | 'ANY',
+	params extends Record<string, string>,
+> = {
+	middleware: RouteMiddleware<method, params>[];
+	action: RequestHandler<method, params>;
+};
+
+/**
+ * build an `Action` type from a string, `RoutePattern`, or `Route`.
+ */
+// prettier-ignore
+export type BuildAction<method extends RequestMethod | 'ANY', route extends string | RoutePattern | Route> =
+  route extends string ? Action<method, route> :
+  route extends RoutePattern<infer pattern> ? Action<method, pattern> :
+  route extends Route<infer _, infer pattern> ? Action<method, pattern> :
+  never
+
+/**
+ * a request handler function that returns some kind of response.
+ *
+ * @param context the request context
+ * @returns the response
+ */
+export interface RequestHandler<
+	method extends RequestMethod | 'ANY' = RequestMethod | 'ANY',
+	params extends Record<string, string> = Record<string, string>,
+> {
+	(context: RequestContext<method, params>): Response | Promise<Response>;
+}
+
+/**
+ * runtime shape for a controller with middleware.
+ */
+export interface ControllerWithMiddlewareShape {
+	middleware: RouteMiddleware[];
+	actions: Record<string, unknown>;
+}
+
+/**
+ * check if an object has middleware and an `actions` property (controller with middleware).
+ */
+export function isControllerWithMiddleware(obj: unknown): obj is ControllerWithMiddlewareShape {
+	return typeof obj === 'object' && obj != null && 'middleware' in obj && 'actions' in obj;
+}
+
+/**
+ * runtime shape for an action with middleware.
+ */
+export interface ActionWithMiddlewareShape {
+	middleware: RouteMiddleware[];
+	action: RequestHandler<any, any>;
+}
+
+/**
+ * check if an object has middleware and an `action` property (action with middleware).
+ */
+export function isActionWithMiddleware(obj: unknown): obj is ActionWithMiddlewareShape {
+	return typeof obj === 'object' && obj != null && 'middleware' in obj && 'action' in obj;
+}
