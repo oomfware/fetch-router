@@ -260,26 +260,76 @@ const router = createRouter({
 });
 ```
 
-route-level middleware runs only for specific routes:
+#### controller middleware
+
+middleware can be applied to a controller, where it runs for all nested actions. this is useful for
+applying authentication or other shared logic to a group of routes:
 
 ```ts
-function auth(): RouterMiddleware {
-	return (context, next) => {
-		const { request } = context;
+const routes = route({
+	account: {
+		profile: resource('account', { only: ['show', 'edit', 'update'] }),
+		password: form('account/password'),
+	},
+});
 
-		if (!request.headers.get('Authorization')) {
-			return new Response('Unauthorized', { status: 401 });
-		}
+router.map(routes, {
+	account: {
+		middleware: [requireAuth()],
+		actions: {
+			// all actions below require authentication
+			profile: {
+				show() { /* ... */ },
+				edit() { /* ... */ },
+				update() { /* ... */ },
+			},
+			password: {
+				index() { /* ... */ },
+				action() { /* ... */ },
+			},
+		},
+	},
+});
+```
 
-		return next(context);
-	};
-}
+nested controllers can add their own middleware, which merges with the parent's:
 
-router.map(routes.admin, {
-	middleware: [auth()],
-	actions: {
-		dashboard() {
-			return new Response('Admin Dashboard');
+```ts
+router.map(routes, {
+	account: {
+		middleware: [requireAuth()],
+		actions: {
+			profile: { /* ... */ },
+			password: {
+				// password actions get requireAuth() AND rateLimit()
+				middleware: [rateLimit()],
+				actions: {
+					index() { /* ... */ },
+					action() { /* ... */ },
+				},
+			},
+		},
+	},
+});
+```
+
+#### per-action middleware
+
+individual actions can also have their own middleware for cases where only one route needs special
+handling:
+
+```ts
+router.map(routes, {
+	users: {
+		middleware: [requireAuth()],
+		actions: {
+			index() { /* ... */ },
+			show({ params }) { /* ... */ },
+			destroy: {
+				// only destroy gets audit logging
+				middleware: [auditLog()],
+				action({ params }) { /* ... */ },
+			},
 		},
 	},
 });
