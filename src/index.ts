@@ -22,6 +22,8 @@ export type { BuildRoute, RouteMap, RouteDefs, RouteDef } from './lib/route-map.
 export { createRouter } from './lib/router.ts';
 export type { MatchData, Router, RouterMiddleware, RouterOptions } from './lib/router.ts';
 
+export { redirect } from './lib/responses.ts';
+
 // route helpers
 
 export {

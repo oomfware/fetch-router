@@ -318,6 +318,10 @@ export function createRouter(options?: RouterOptions): Router {
 				if (request.signal.aborted) {
 					return new Response(null, { status: 499 });
 				}
+				if (error instanceof Response) {
+					return error;
+				}
+
 				throw error;
 			}
 		},
