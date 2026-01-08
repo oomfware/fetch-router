@@ -2,7 +2,7 @@
 	"type": "module",
 	"name": "@oomfware/fetch-router",
 	"version": "0.1.0",
-	"description": "composable HTTP router",
+	"description": "composable web router",
 	"license": "0BSD",
 	"repository": {
 		"type": "git",
