@@ -10,6 +10,7 @@
 	},
 	"exports": {
 		".": "./dist/index.mjs",
+		"./middlewares/async-context": "./dist/middlewares/async-context.mjs",
 		"./package.json": "./package.json"
 	},
 	"main": "./dist/index.mjs",

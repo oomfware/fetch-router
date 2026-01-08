@@ -1,5 +1,3 @@
-export { asyncContext, getContext } from './lib/async-context.ts';
-
 export type { Controller, Action, BuildAction, RequestHandler } from './lib/controller.ts';
 
 export { createInjectionKey } from './lib/injection.ts';
