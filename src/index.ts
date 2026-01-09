@@ -4,7 +4,7 @@ export { createInjectionKey } from './lib/injection.ts';
 export type { InjectionKey, ContextStore } from './lib/injection.ts';
 
 export { composeMiddleware } from './lib/middleware.ts';
-export type { NextFunction, Middleware as RouterMiddleware } from './lib/middleware.ts';
+export type { NextFunction, Middleware } from './lib/middleware.ts';
 
 export { createRequestContext } from './lib/request-context.ts';
 export type { RequestContext } from './lib/request-context.ts';
