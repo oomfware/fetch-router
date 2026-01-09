@@ -12,9 +12,6 @@ import { createRequestContext, type RequestContext } from './request-context.ts'
 import type { RequestMethod } from './request-methods.ts';
 import { Route, type RouteMap } from './route-map.ts';
 
-/** middleware type for the router */
-export type RouterMiddleware = Middleware<[RequestContext], Promise<Response>>;
-
 export type MatchData = {
 	runner: (context: RequestContext) => Promise<Response>;
 	method: RequestMethod | 'ANY';
@@ -56,7 +53,7 @@ export interface RouterOptions {
 	 * global middleware to run for all routes. this middleware runs on every request before any
 	 * routes are matched.
 	 */
-	middleware?: RouterMiddleware[];
+	middleware?: Middleware[];
 }
 
 /**
@@ -209,7 +206,7 @@ export function createRouter(options?: RouterOptions): Router {
 		route: pattern | RoutePattern<pattern> | Route<method | 'ANY', pattern>,
 		action: Action<method, pattern>,
 	): void {
-		let middlewares: RouterMiddleware[] = [];
+		let middlewares: Middleware[] = [];
 		let handler: RequestHandler<any, any>;
 
 		if (isActionWithMiddleware(action)) {
@@ -252,7 +249,7 @@ export function createRouter(options?: RouterOptions): Router {
 
 	function mapControllerWithMiddleware(
 		routes: RouteMap,
-		middleware: RouterMiddleware[],
+		middleware: Middleware[],
 		actions: Record<string, unknown>,
 	): void {
 		for (const key in routes) {

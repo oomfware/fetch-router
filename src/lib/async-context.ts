@@ -1,7 +1,7 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
 
+import type { Middleware } from './middleware.ts';
 import type { RequestContext } from './request-context.ts';
-import type { RouterMiddleware } from './router.ts';
 
 const storage = new AsyncLocalStorage<RequestContext>();
 
@@ -11,8 +11,8 @@ const storage = new AsyncLocalStorage<RequestContext>();
  *
  * @returns a middleware function that stores the request context
  */
-export function asyncContext(): RouterMiddleware {
-	return (context, next) => storage.run(context, () => next(context));
+export function asyncContext(): Middleware {
+	return (context, next) => storage.run(context, next);
 }
 
 /**

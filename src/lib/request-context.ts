@@ -13,7 +13,7 @@ export interface RequestContext<
 	/** the request's abort signal */
 	signal: AbortSignal;
 	/** the request method */
-	method: method;
+	method: RequestMethod;
 	/** the parsed URL */
 	url: URL;
 	/** params parsed from the URL pattern */

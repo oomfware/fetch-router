@@ -4,7 +4,7 @@ export { createInjectionKey } from './lib/injection.ts';
 export type { InjectionKey, ContextStore } from './lib/injection.ts';
 
 export { composeMiddleware } from './lib/middleware.ts';
-export type { Middleware } from './lib/middleware.ts';
+export type { NextFunction, Middleware as RouterMiddleware } from './lib/middleware.ts';
 
 export { createRequestContext } from './lib/request-context.ts';
 export type { RequestContext } from './lib/request-context.ts';
@@ -20,7 +20,7 @@ export {
 export type { BuildRoute, RouteMap, RouteDefs, RouteDef } from './lib/route-map.ts';
 
 export { createRouter } from './lib/router.ts';
-export type { MatchData, Router, RouterMiddleware, RouterOptions } from './lib/router.ts';
+export type { MatchData, Router, RouterOptions } from './lib/router.ts';
 
 export { redirect } from './lib/responses.ts';
 

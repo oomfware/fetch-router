@@ -5,19 +5,13 @@ import type { RequestContext } from './request-context.ts';
 import type { RequestMethod } from './request-methods.ts';
 import type { Route, RouteMap } from './route-map.ts';
 
-/** middleware type for route handlers */
-type RouteMiddleware<
-	method extends RequestMethod | 'ANY' = RequestMethod | 'ANY',
-	params extends Record<string, string> = Record<string, string>,
-> = Middleware<[RequestContext<method, params>], Promise<Response>>;
-
 // prettier-ignore
 export type Controller<routes extends RouteMap> =
   | ControllerWithMiddleware<routes>
   | ControllerWithoutMiddleware<routes>
 
 type ControllerWithMiddleware<routes extends RouteMap> = {
-	middleware: RouteMiddleware[];
+	middleware: Middleware[];
 	actions: ControllerWithoutMiddleware<routes>;
 } & (routes extends Record<string, any>
 	? {
@@ -51,7 +45,7 @@ type RequestHandlerWithMiddleware<
 	method extends RequestMethod | 'ANY',
 	params extends Record<string, string>,
 > = {
-	middleware: RouteMiddleware<method, params>[];
+	middleware: Middleware<method, params>[];
 	action: RequestHandler<method, params>;
 };
 
@@ -82,7 +76,7 @@ export interface RequestHandler<
  * runtime shape for a controller with middleware.
  */
 export interface ControllerWithMiddlewareShape {
-	middleware: RouteMiddleware[];
+	middleware: Middleware[];
 	actions: Record<string, unknown>;
 }
 
@@ -97,7 +91,7 @@ export function isControllerWithMiddleware(obj: unknown): obj is ControllerWithM
  * runtime shape for an action with middleware.
  */
 export interface ActionWithMiddlewareShape {
-	middleware: RouteMiddleware[];
+	middleware: Middleware[];
 	action: RequestHandler<any, any>;
 }
 

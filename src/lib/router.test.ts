@@ -2,7 +2,9 @@ import { describe, expect, it } from 'bun:test';
 
 import { ArrayMatcher, RoutePattern } from '@remix-run/route-pattern';
 
+import type { BuildAction } from './controller.ts';
 import { createRoutes as route } from './route-map.ts';
+import type { Middleware } from './middleware.ts';
 import { createRouter, type MatchData } from './router.ts';
 
 describe('router.fetch()', () => {
@@ -28,7 +30,7 @@ describe('router.fetch()', () => {
 			middleware: [
 				(_ctx, next) => {
 					requestLog.push('middleware');
-					return next(_ctx);
+					return next();
 				},
 			],
 			action() {
@@ -55,7 +57,7 @@ describe('router.fetch()', () => {
 			middleware: [
 				(ctx, next) => {
 					requestLog.push('router middleware');
-					return next(ctx);
+					return next();
 				},
 			],
 		});
@@ -64,7 +66,7 @@ describe('router.fetch()', () => {
 			middleware: [
 				(ctx, next) => {
 					requestLog.push('route middleware');
-					return next(ctx);
+					return next();
 				},
 			],
 			action() {
@@ -106,7 +108,7 @@ describe('router.fetch()', () => {
 			middleware: [
 				(ctx, next) => {
 					requestLog.push('middleware');
-					return next(ctx);
+					return next();
 				},
 			],
 		});
@@ -123,7 +125,7 @@ describe('router.fetch()', () => {
 			middleware: [
 				(ctx, next) => {
 					requestLog.push('middleware');
-					return next(ctx);
+					return next();
 				},
 			],
 		});
@@ -169,7 +171,7 @@ describe('router.map() with single routes', () => {
 			middleware: [
 				(context, next) => {
 					requestLog.push(`middleware ${context.params.id}`);
-					return next(context);
+					return next();
 				},
 			],
 			action() {
@@ -257,7 +259,7 @@ describe('router.map()', () => {
 			middleware: [
 				(ctx, next) => {
 					requestLog.push('middleware');
-					return next(ctx);
+					return next();
 				},
 			],
 			actions: {
@@ -290,7 +292,7 @@ describe('router.map()', () => {
 			middleware: [
 				(ctx, next) => {
 					requestLog.push('outer middleware');
-					return next(ctx);
+					return next();
 				},
 			],
 			actions: {
@@ -298,7 +300,7 @@ describe('router.map()', () => {
 					middleware: [
 						(ctx, next) => {
 							requestLog.push('inner middleware');
-							return next(ctx);
+							return next();
 						},
 					],
 					actions: {
@@ -338,7 +340,7 @@ describe('router.map()', () => {
 			middleware: [
 				(ctx, next) => {
 					requestLog.push('global');
-					return next(ctx);
+					return next();
 				},
 			],
 		});
@@ -347,7 +349,7 @@ describe('router.map()', () => {
 			middleware: [
 				(ctx, next) => {
 					requestLog.push('inline');
-					return next(ctx);
+					return next();
 				},
 			],
 			actions: {
@@ -383,7 +385,7 @@ describe('router.get()', () => {
 			middleware: [
 				(ctx, next) => {
 					requestLog.push('middleware');
-					return next(ctx);
+					return next();
 				},
 			],
 			action() {
@@ -395,6 +397,68 @@ describe('router.get()', () => {
 		expect(await response.text()).toBe('Home');
 		expect(requestLog).toEqual(['middleware']);
 	});
+
+	it('maps a single route to an action with externally defined middleware', async () => {
+		let routes = route({
+			home: '/',
+		});
+
+		let requestLog: string[] = [];
+
+		const auth: Middleware = (ctx, next) => {
+			requestLog.push('auth');
+			return next();
+		};
+
+		const home = {
+			middleware: [auth],
+			action() {
+				return new Response('Home');
+			},
+		} satisfies BuildAction<'ANY', typeof routes.home>;
+
+		let router = createRouter();
+		router.map(routes.home, home);
+
+		let response = await router.fetch('https://remix.run');
+		expect(response.status).toBe(200);
+		expect(await response.text()).toBe('Home');
+		expect(requestLog).toEqual(['auth']);
+	});
+
+	it('inline middleware gets typed params', async () => {
+		let routes = route({
+			profile: '/profile/:id',
+		});
+
+		let capturedId: string | undefined;
+		let router = createRouter();
+
+		const auth: Middleware = (ctx, next) => {
+			return next();
+		};
+
+		const profile: BuildAction<'ANY', typeof routes.profile> = {
+			middleware: [
+				auth,
+				(ctx, next) => {
+					// this verifies ctx.params.id is typed (not just Record<string, string>)
+					capturedId = ctx.params.id;
+					return next();
+				},
+			],
+			action({ params }) {
+				return new Response(`Profile ${params.id}`);
+			},
+		};
+
+		router.map(routes.profile, profile);
+
+		let response = await router.fetch('https://remix.run/profile/123');
+		expect(response.status).toBe(200);
+		expect(await response.text()).toBe('Profile 123');
+		expect(capturedId).toBe('123');
+	});
 });
 
 describe('inline middleware', () => {
@@ -404,7 +468,7 @@ describe('inline middleware', () => {
 			middleware: [
 				(ctx, next) => {
 					requestLog.push('global');
-					return next(ctx);
+					return next();
 				},
 			],
 		});
@@ -413,11 +477,11 @@ describe('inline middleware', () => {
 			middleware: [
 				(ctx, next) => {
 					requestLog.push('inline-1');
-					return next(ctx);
+					return next();
 				},
 				(ctx, next) => {
 					requestLog.push('inline-2');
-					return next(ctx);
+					return next();
 				},
 			],
 			action() {
@@ -439,7 +503,7 @@ describe('inline middleware', () => {
 			middleware: [
 				(ctx, next) => {
 					requestLog.push('inline-a');
-					return next(ctx);
+					return next();
 				},
 			],
 			action() {
@@ -490,7 +554,7 @@ describe('inline middleware', () => {
 			middleware: [
 				(ctx, next) => {
 					requestLog.push('m1');
-					return next(ctx);
+					return next();
 				},
 				() => {
 					requestLog.push('m2-short-circuit');
@@ -498,7 +562,7 @@ describe('inline middleware', () => {
 				},
 				(ctx, next) => {
 					requestLog.push('m3');
-					return next(ctx);
+					return next();
 				},
 			],
 			action() {
@@ -635,7 +699,7 @@ describe('error handling', () => {
 			middleware: [
 				async (ctx, next) => {
 					try {
-						return await next(ctx);
+						return await next();
 					} catch (error) {
 						return new Response(`Caught: ${(error as Error).message}`, { status: 500 });
 					}

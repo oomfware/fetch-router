@@ -61,7 +61,7 @@ describe('asyncContext', () => {
 				asyncContext(),
 				(context, next) => {
 					context.store.provide(userKey, { name: 'alice' });
-					return next(context);
+					return next();
 				},
 			],
 		});
