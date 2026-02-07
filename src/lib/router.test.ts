@@ -3,8 +3,8 @@ import { describe, expect, it } from 'bun:test';
 import { ArrayMatcher, RoutePattern } from '@remix-run/route-pattern';
 
 import type { BuildAction } from './controller.ts';
-import { createRoutes as route } from './route-map.ts';
 import type { Middleware } from './middleware.ts';
+import { createRoutes as route } from './route-map.ts';
 import { createRouter, type MatchData } from './router.ts';
 
 describe('router.fetch()', () => {

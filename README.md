@@ -279,13 +279,23 @@ router.map(routes, {
 		actions: {
 			// all actions below require authentication
 			profile: {
-				show() { /* ... */ },
-				edit() { /* ... */ },
-				update() { /* ... */ },
+				show() {
+					/* ... */
+				},
+				edit() {
+					/* ... */
+				},
+				update() {
+					/* ... */
+				},
 			},
 			password: {
-				index() { /* ... */ },
-				action() { /* ... */ },
+				index() {
+					/* ... */
+				},
+				action() {
+					/* ... */
+				},
 			},
 		},
 	},
@@ -299,13 +309,19 @@ router.map(routes, {
 	account: {
 		middleware: [requireAuth()],
 		actions: {
-			profile: { /* ... */ },
+			profile: {
+				/* ... */
+			},
 			password: {
 				// password actions get requireAuth() AND rateLimit()
 				middleware: [rateLimit()],
 				actions: {
-					index() { /* ... */ },
-					action() { /* ... */ },
+					index() {
+						/* ... */
+					},
+					action() {
+						/* ... */
+					},
 				},
 			},
 		},
@@ -323,12 +339,18 @@ router.map(routes, {
 	users: {
 		middleware: [requireAuth()],
 		actions: {
-			index() { /* ... */ },
-			show({ params }) { /* ... */ },
+			index() {
+				/* ... */
+			},
+			show({ params }) {
+				/* ... */
+			},
 			destroy: {
 				// only destroy gets audit logging
 				middleware: [auditLog()],
-				action({ params }) { /* ... */ },
+				action({ params }) {
+					/* ... */
+				},
 			},
 		},
 	},
