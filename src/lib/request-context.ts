@@ -5,6 +5,7 @@ import type { RequestMethod } from './request-methods.ts';
  * a context object containing the request and matched route parameters.
  */
 export interface RequestContext<
+	// oxlint-disable-next-line no-unused-vars
 	method extends RequestMethod | 'ANY' = RequestMethod | 'ANY',
 	params extends Record<string, string> = Record<string, string>,
 > {
