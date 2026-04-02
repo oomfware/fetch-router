@@ -13,7 +13,7 @@ the source code is organized under `src/`:
 - tools like Node.js, Bun and pnpm are managed by mise
 - build with `pnpm run build` (tsdown)
 - format with `pnpm run fmt` (oxfmt)
-- lint with `pnpm run lint` (oxlint)
+- lint and typecheck with `pnpm run lint` (oxlint)
 - check `pnpm view <package>` before adding a new dependency
 
 ### code writing
