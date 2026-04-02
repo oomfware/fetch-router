@@ -177,6 +177,7 @@ export function createRouter(options?: RouterOptions): Router {
 	const defaultHandler = options?.defaultHandler ?? noMatchHandler;
 	const matcher = options?.matcher ?? new ArrayMatcher<MatchData>();
 	const globalMiddleware = options?.middleware;
+	let routeCount = 0;
 
 	function dispatch(context: RequestContext): Promise<Response> {
 		for (const match of matcher.matchAll(context.url)) {
@@ -229,6 +230,7 @@ export function createRouter(options?: RouterOptions): Router {
 			runner,
 			method,
 		});
+		routeCount++;
 	}
 
 	function mapRoutes(target: MapTarget, handler: unknown): void {
@@ -329,7 +331,7 @@ export function createRouter(options?: RouterOptions): Router {
 			}
 		},
 		get size(): number {
-			return matcher.size;
+			return routeCount;
 		},
 		route: addRoute,
 		map: mapRoutes,

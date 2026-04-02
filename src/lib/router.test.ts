@@ -722,9 +722,9 @@ describe('custom matcher', () => {
 		let matchAllCalls = 0;
 
 		class CustomMatcher extends ArrayMatcher<MatchData> {
-			override *matchAll(url: string | URL) {
+			override matchAll(url: string | URL, compareFn?: Parameters<ArrayMatcher<MatchData>['matchAll']>[1]) {
 				matchAllCalls++;
-				yield* super.matchAll(url);
+				return super.matchAll(url, compareFn);
 			}
 		}
 

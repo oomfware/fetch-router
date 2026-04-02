@@ -13,7 +13,7 @@ export type NextFunction = () => Promise<Response>;
  */
 export type Middleware<
 	method extends RequestMethod | 'ANY' = RequestMethod | 'ANY',
-	params extends Record<string, string> = Record<string, string>,
+	params extends Record<string, any> = Record<string, any>,
 > = (context: RequestContext<method, params>, next: NextFunction) => Promise<Response>;
 
 /**

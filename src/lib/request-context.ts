@@ -7,7 +7,7 @@ import type { RequestMethod } from './request-methods.ts';
 export interface RequestContext<
 	// oxlint-disable-next-line no-unused-vars
 	method extends RequestMethod | 'ANY' = RequestMethod | 'ANY',
-	params extends Record<string, string> = Record<string, string>,
+	params extends Record<string, any> = Record<string, any>,
 > {
 	/** the original request */
 	request: Request;

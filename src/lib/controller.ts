@@ -43,7 +43,7 @@ export type Action<method extends RequestMethod | 'ANY', pattern extends string>
 
 type RequestHandlerWithMiddleware<
 	method extends RequestMethod | 'ANY',
-	params extends Record<string, string>,
+	params extends Record<string, any>,
 > = {
 	middleware: Middleware<method, params>[];
 	action: RequestHandler<method, params>;
@@ -67,7 +67,7 @@ export type BuildAction<method extends RequestMethod | 'ANY', route extends stri
  */
 export interface RequestHandler<
 	method extends RequestMethod | 'ANY' = RequestMethod | 'ANY',
-	params extends Record<string, string> = Record<string, string>,
+	params extends Record<string, any> = Record<string, any>,
 > {
 	(context: RequestContext<method, params>): Response | Promise<Response>;
 }

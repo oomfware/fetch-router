@@ -1,4 +1,4 @@
-import { RoutePattern, type HrefBuilderArgs, type Join, type RouteMatch } from '@remix-run/route-pattern';
+import { RoutePattern, type HrefArgs, type Join, type RoutePatternMatch } from '@remix-run/route-pattern';
 
 import type { RequestMethod } from './request-methods.ts';
 import type { Simplify } from './type-utils.ts';
@@ -42,7 +42,7 @@ export class Route<
 	 * @param args The parameters to use for building the href
 	 * @returns The built URL href
 	 */
-	href(...args: HrefBuilderArgs<pattern>): string {
+	href(...args: HrefArgs<pattern>): string {
 		return this.pattern.href(...args);
 	}
 
@@ -52,7 +52,7 @@ export class Route<
 	 * @param url The URL to match
 	 * @returns The match result, or `null` if the URL doesn't match
 	 */
-	match(url: string | URL): RouteMatch<pattern> | null {
+	match(url: string | URL): RoutePatternMatch<pattern> | null {
 		return this.pattern.match(url);
 	}
 }
