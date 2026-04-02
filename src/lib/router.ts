@@ -20,7 +20,7 @@ export type MatchData = {
 /**
  * the valid types for the first argument to `router.map()`.
  */
-export type MapTarget = string | RoutePattern<string> | Route<RequestMethod | 'ANY', string> | RouteMap;
+export type MapTarget = string | RoutePattern | Route | RouteMap;
 
 /**
  * infer the correct handler type (Action or Controller) based on the map target.
@@ -215,6 +215,7 @@ export function createRouter(options?: RouterOptions): Router {
 			}
 			handler = action.action;
 		} else {
+			// oxlint-disable-next-line no-unsafe-type-assertion
 			handler = action as RequestHandler<any, any>;
 		}
 
@@ -233,6 +234,7 @@ export function createRouter(options?: RouterOptions): Router {
 	function mapRoutes(target: MapTarget, handler: unknown): void {
 		// single route: string, RoutePattern, or Route
 		if (typeof target === 'string' || target instanceof RoutePattern || target instanceof Route) {
+			// oxlint-disable-next-line no-unsafe-type-assertion
 			addRoute('ANY', target, handler as Action<any, any>);
 			return;
 		}
@@ -243,6 +245,7 @@ export function createRouter(options?: RouterOptions): Router {
 			mapControllerWithMiddleware(target, handler.middleware, handler.actions);
 		} else {
 			// map(routes, controller)
+			// oxlint-disable-next-line no-unsafe-type-assertion
 			mapController(target, handler as Record<string, unknown>);
 		}
 	}
@@ -266,15 +269,17 @@ export function createRouter(options?: RouterOptions): Router {
 				} else {
 					addRoute(route.method, route.pattern, {
 						middleware,
+						// oxlint-disable-next-line no-unsafe-type-assertion
 						action: action as RequestHandler<any, any>,
 					});
 				}
 			} else if (isControllerWithMiddleware(action)) {
 				// nested controller with its own middleware - merge and recurse
-				mapControllerWithMiddleware(route as RouteMap, middleware.concat(action.middleware), action.actions);
+				mapControllerWithMiddleware(route, middleware.concat(action.middleware), action.actions);
 			} else {
 				// nested controller without middleware - pass down current middleware
-				mapControllerWithMiddleware(route as RouteMap, middleware, action as Record<string, unknown>);
+				// oxlint-disable-next-line no-unsafe-type-assertion
+				mapControllerWithMiddleware(route, middleware, action as Record<string, unknown>);
 			}
 		}
 	}
@@ -285,9 +290,10 @@ export function createRouter(options?: RouterOptions): Router {
 			const action = controller[key];
 
 			if (route instanceof Route) {
+				// oxlint-disable-next-line no-unsafe-type-assertion
 				addRoute(route.method, route.pattern, action as Action<any, any>);
 			} else {
-				mapRoutes(route as RouteMap, action);
+				mapRoutes(route, action);
 			}
 		}
 	}

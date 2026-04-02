@@ -104,8 +104,10 @@ function buildRouteMap<base extends string, defs extends RouteDefs>(
 		} else if (typeof def === 'string' || def instanceof RoutePattern) {
 			routes[key] = new Route('ANY', base.join(def));
 		} else if (typeof def === 'object' && def != null && 'pattern' in def) {
+			// oxlint-disable-next-line no-unsafe-type-assertion
 			routes[key] = new Route((def as any).method ?? 'ANY', base.join((def as any).pattern));
 		} else {
+			// oxlint-disable-next-line no-unsafe-type-assertion
 			routes[key] = buildRouteMap(base, def as any);
 		}
 	}

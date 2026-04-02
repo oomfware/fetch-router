@@ -36,6 +36,7 @@ export function createFormRoutes<pattern extends string, const options extends F
 	const indexName = options?.names?.index ?? 'index';
 	const actionName = options?.names?.action ?? 'action';
 
+	// oxlint-disable-next-line no-unsafe-type-assertion
 	return createRoutes(pattern, {
 		[indexName]: { method: 'GET', pattern: '/' },
 		[actionName]: { method: formMethod, pattern: '/' },

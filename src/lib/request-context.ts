@@ -30,6 +30,7 @@ export function createRequestContext(request: Request): RequestContext {
 	return {
 		request,
 		signal: request.signal,
+		// oxlint-disable-next-line no-unsafe-type-assertion
 		method: request.method as RequestMethod,
 		url: new URL(request.url),
 		params: {},

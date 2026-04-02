@@ -106,6 +106,7 @@ export function createResourcesRoutes<base extends string, const options extends
 		routes[destroyName] = { method: 'DELETE', pattern: `/:${param}` };
 	}
 
+	// oxlint-disable-next-line no-unsafe-type-assertion
 	return createRoutes(base, routes) as BuildResourcesMap<base, options>;
 }
 

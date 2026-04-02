@@ -57,6 +57,7 @@ export function createContextStore(): ContextStore {
 		},
 		inject<T>(key: InjectionKey<T>): T {
 			if (map.has(key)) {
+				// oxlint-disable-next-line no-unsafe-type-assertion
 				return map.get(key) as T;
 			}
 			return key.defaultValue;

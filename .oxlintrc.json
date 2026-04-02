@@ -16,7 +16,11 @@
 		{
 			"files": ["*.test.ts"],
 			"rules": {
-				"typescript/no-floating-promises": "off"
+				"typescript/no-floating-promises": "off",
+				"no-await-in-loop": "off",
+				"typescript/await-thenable": "off",
+				"unicorn/consistent-function-scoping": "off",
+				"typescript/no-unsafe-type-assertion": "off"
 			}
 		}
 	]
